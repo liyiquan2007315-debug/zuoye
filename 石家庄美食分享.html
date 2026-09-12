@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石家庄美食分享</title>
+    <style>
+    body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: "微软雅黑", sans-serif; color: #333; }
+    .banner { width: 100%; height: auto; display: block; margin-bottom: 20px; }
+    .food-img { width: 320px; max-width: 100%; height: auto; display: block; margin: 10px 0; }
+    h1 { font-size: 22px; margin: 0 0 15px 0; text-align: left; }
+    h2 { font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin: 24px 0 10px; }
+    p { font-size: 15px; line-height: 1.8; }
+    .footer { text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 14px; color: #666; }
+    .comment-section { margin-top: 30px; }
+    .comment-section p { margin: 8px 0; font-size: 14px; }
+    .comment-section input[type=text], .comment-section textarea { width: 100%; padding: 6px; box-sizing: border-box; font-size: 14px; }
+    .comment-section textarea { height: 70px; }
+    .comment-section button { padding: 6px 24px; cursor: pointer; font-size: 14px; }
+    .comment-item { border-bottom: 1px dashed #ddd; padding: 12px 0; }
+    .comment-header { font-size: 13px; color: #666; margin-bottom: 6px; }
+    .comment-header .name { font-weight: bold; color: #333; margin-right: 10px; }
+    .comment-content { font-size: 14px; line-height: 1.6; }
+    .no-comment { text-align: center; color: #999; padding: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>石家庄美食分享</h1>
+    <img class="banner" src="https://ts1.tc.mm.bing.net/th/id/ODL.b48cc83c2c5e0f111fc8e0c02f0af52b?w=310&h=198&c=7&rs=1&bgcl=fffffe&r=0&o=6&dpr=1.5&pid=AlgoBlockDebug" alt="石家庄美食">
+
+    <h2>缸炉烧饼</h2>
+    <p>采用火炉烧缸烤制，外酥里嫩，香脆可口，是石家庄及京津冀地区的传统名小吃，色泽金黄，口感酥香脆爽，常搭配卤蛋或豆腐脑食用。
+    <img class="food-img" src="https://q8.itc.cn/q_70/images01/20240225/647325d66dd04f9da369c82ca1dbd952.png" alt="缸炉烧饼"></p>
+
+    <h2>牛肉罩饼</h2>
+    <p>牛肉罩饼是石家庄面食中的佼佼者。醇香的牛肉和柔软的饼完美结合，每一口都充满了浓郁的肉香和面食的醇厚口感，让人回味无穷。
+    <img class="food-img" src="https://q0.itc.cn/q_70/images01/20240225/d2e0464a6c69482399e95ead24880e24.png" alt="牛肉罩饼"></p>
+
+    <h2>驴肉火烧</h2>
+    <p>驴肉火烧是石家庄的传统小吃之一，以其酥脆的外皮和鲜嫩的驴肉而闻名。在石家庄的大街小巷，随处都可以品尝到这道美味的小吃。
+    <img class="food-img" src="https://q8.itc.cn/q_70/images01/20240225/a9d0bdc05f7d4039afef479abd2918f4.png" alt="驴肉火烧"></p>
+
+    <!-- 评论区 -->
+    <div class="comment-section">
+        <h2>美食评论分享</h2>
+        <p><label>昵称：<input type="text" id="cName" placeholder="你的昵称（不填则为匿名）"></label></p>
+        <p><label>评论内容：<textarea id="cContent" placeholder="分享你的美食体验..."></textarea></label></p>
+        <p><button type="button" id="cSubmit">发表评论</button></p>
+        <div id="commentList"></div>
+    </div>
+
+    <div class="footer">李奕泉 2500702304</div>
+
+<script>
+var COMMENTS_KEY = 'food_comments';
+
+function loadComments() {
+    try { return JSON.parse(localStorage.getItem(COMMENTS_KEY)) || []; }
+    catch (e) { return []; }
+}
+
+function saveComments(arr) {
+    try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(arr)); }
+    catch (e) { alert('保存失败'); }
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function pad(n) { return n < 10 ? '0' + n : n; }
+
+function renderComments() {
+    var list = document.getElementById('commentList');
+    var comments = loadComments();
+    list.innerHTML = '';
+    comments.slice().reverse().forEach(function (c) {
+        var item = document.createElement('div');
+        item.className = 'comment-item';
+        item.innerHTML = '<div class="comment-header"><span class="name">' + escapeHtml(c.name) + '</span><span>' + c.time + '</span></div>'
+            + '<div class="comment-content">' + escapeHtml(c.content) + '</div>';
+        list.appendChild(item);
+    });
+}
+
+document.getElementById('cSubmit').addEventListener('click', function () {
+    var name = document.getElementById('cName').value.trim() || '匿名用户';
+    var content = document.getElementById('cContent').value.trim();
+    if (!content) { alert('请输入评论内容'); return; }
+
+    var now = new Date();
+    var time = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+        + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+    var comments = loadComments();
+    comments.push({ id: Date.now(), name: name, content: content, time: time });
+    saveComments(comments);
+    renderComments();
+
+    document.getElementById('cName').value = '';
+    document.getElementById('cContent').value = '';
+});
+
+renderComments();
+</script>
+</body>
+</html>
